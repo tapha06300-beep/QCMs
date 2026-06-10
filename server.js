@@ -30,7 +30,7 @@ function insertDefaultQuiz() {
   db.quizzes[id] = {
     id, createdAt: new Date().toISOString(),
     title: 'Évaluations numériques',
-    subject: 'Azure Bac+3 — Séance 7',
+    subject: '',
     questions: [
       {part:"Cloud & organisation",q:"Dans le modèle IaaS sur Azure, quelle responsabilité incombe exclusivement au client ?",choices:["La maintenance du matériel physique dans le datacenter","La gestion de l'hyperviseur et du réseau physique","Le patching du système d'exploitation et la configuration des middlewares","La redondance électrique et la climatisation des salles serveurs"],answer:2},
       {part:"Cloud & organisation",q:"Qu'est-ce qu'une Availability Zone dans Azure ?",choices:["Un datacenter situé dans un pays différent pour la reprise après sinistre","Un ou plusieurs datacenters physiquement isolés au sein d'une même région, avec alimentation et réseau indépendants","Un groupe de régions partageant la même infrastructure réseau backbone","Un service de répartition de charge automatique entre plusieurs régions"],answer:1},
