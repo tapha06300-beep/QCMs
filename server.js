@@ -29,7 +29,7 @@ function insertDefaultQuiz() {
   const id = db.nextQuizId++;
   db.quizzes[id] = {
     id, createdAt: new Date().toISOString(),
-    title: 'Introduction à Microsoft Azure',
+    title: 'Évaluations numériques',
     subject: 'Azure Bac+3 — Séance 7',
     questions: [
       {part:"Cloud & organisation",q:"Dans le modèle IaaS sur Azure, quelle responsabilité incombe exclusivement au client ?",choices:["La maintenance du matériel physique dans le datacenter","La gestion de l'hyperviseur et du réseau physique","Le patching du système d'exploitation et la configuration des middlewares","La redondance électrique et la climatisation des salles serveurs"],answer:2},
