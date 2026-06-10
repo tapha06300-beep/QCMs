@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ══════════════════════════════════════════════════════════════════════════════
 const db = {
   config: {
-    teacherPwd:  'FORMATEUR',
+    teacherPwd:  'qcm@69100!DZ',
     accessCode:  'QCM2026',
     duration:    1800,
     qcmActive:   true
