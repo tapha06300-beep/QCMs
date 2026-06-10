@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QCM Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--blue:#0078D4;--blue-dk:#005a9e;--blue-lt:#e6f1fb;--blue-xlt:#f0f8ff;
+  --green:#0F6E56;
+  --ok:#10B981;--err:#EF4444;--warn:#F59E0B;
+  --bg:#F4F6FA;--srf:#fff;--srf2:#F8FAFC;
+  --bdr:#E2E8F0;--bdr2:#CBD5E1;
+  --tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;
+  --f:'DM Sans',sans-serif;--m:'DM Mono',monospace;
+  --r:10px;--rl:14px;--sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+}
+html{background:var(--bg);font-family:var(--f);color:var(--tx);font-size:15px;line-height:1.6}
+.hidden{display:none!important}
+/* ── Topbar ── */
+.topbar{background:var(--navy);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:200}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.tb-name{font-size:14px;font-weight:500;color:#fff}
+.tb-tabs{display:flex;gap:2px;margin-left:auto}
+.ttab{padding:5px 14px;border-radius:6px;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;border:none;background:transparent;transition:all .15s}
+.ttab:hover{color:#fff;background:rgba(255,255,255,.08)}
+.ttab.active{color:#fff;background:rgba(0,120,212,.5)}
+/* ── Layout ── */
+.main{padding:28px 20px;max-width:900px;margin:0 auto;width:100%}
+/* ── Cards ── */
+.card{background:var(--srf);border:1px solid var(--bdr);border-radius:var(--rl);padding:22px;box-shadow:var(--sh)}
+.card-sm{padding:14px 18px}
+/* ── Inner tabs ── */
+.itabs{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--bdr)}
+.itab{padding:8px 18px;font-size:14px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.itab:hover{color:var(--blue)}
+.itab.active{color:var(--blue);border-bottom-color:var(--blue)}
+/* ── Forms ── */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--tx2);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:9px 13px;border:1.5px solid var(--bdr2);border-radius:var(--r);background:var(--srf2);color:var(--tx);font-family:var(--f);font-size:14px;outline:none;transition:border .15s}
+.field textarea{resize:vertical;font-family:var(--m);font-size:12px;min-height:60px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,120,212,.1)}
+.field input[type=password]{letter-spacing:.1em}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Champ code accès */
+.field-code input{text-transform:uppercase;letter-spacing:.18em;font-family:var(--m);font-weight:600;font-size:15px}
+/* ── Boutons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r);font-family:var(--f);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-dk)}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:#162033}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#0a4f3d}
+.btn-ghost{background:transparent;color:var(--tx);border:1.5px solid var(--bdr2)}.btn-ghost:hover{background:var(--srf2)}
+.btn-danger{background:#FEF2F2;color:#B91C1C;border:1.5px solid #FECACA}.btn-danger:hover{background:#FEE2E2}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.35;cursor:default;pointer-events:none}
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.b-blue{background:var(--blue-lt);color:#0C447C}
+.b-green{background:#ECFDF5;color:#065F46}
+.b-red{background:#FEF2F2;color:#B91C1C}
+.b-amber{background:#FFFBEB;color:#92400E}
+.b-gray{background:var(--srf2);color:var(--tx2);border:1px solid var(--bdr)}
+/* ── Boîtes info ── */
+.box-err{background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r);padding:9px 13px;font-size:13px;color:#B91C1C}
+.box-ok{background:#ECFDF5;border:1px solid #A7F3D0;border-radius:var(--r);padding:9px 13px;font-size:13px;color:#065F46}
+.box-info{background:var(--blue-xlt);border:1px solid #bfdbfe;border-radius:var(--r);padding:9px 13px;font-size:13px;color:#1e40af;line-height:1.5}
+.box-warn{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r);padding:9px 13px;font-size:13px;color:#92400E;line-height:1.5}
+/* ── Login ── */
+.login-center{min-height:calc(100vh - 52px);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:400px}
+.login-logo{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.login-logo svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.login-title{font-size:21px;font-weight:600;text-align:center;margin-bottom:5px}
+.login-sub{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:20px;line-height:1.5}
+/* ── QCM ── */
+.qcm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.qcm-lbl{font-size:13px;color:var(--tx2);font-weight:500}
+.qcm-tmr{font-size:15px;font-weight:600;font-family:var(--m)}
+.qcm-tmr.warn{color:var(--err);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.prog-track{height:5px;background:var(--bdr);border-radius:5px;overflow:hidden;margin-bottom:22px}
+.prog-fill{height:5px;background:var(--blue);border-radius:5px;transition:width .4s}
+.q-part{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--blue);text-transform:uppercase;margin-bottom:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:16px;user-select:none}
+.q-opts{display:flex;flex-direction:column;gap:7px}
+.q-opt{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);cursor:pointer;background:var(--srf);text-align:left;width:100%;transition:all .15s;user-select:none}
+.q-opt:hover{border-color:var(--blue);background:var(--blue-xlt)}
+.q-opt.sel{border-color:var(--blue);background:var(--blue-lt)}
+.q-opt.sel .q-ltr{background:var(--blue);color:#fff;border-color:var(--blue)}
+.q-ltr{min-width:26px;height:26px;border-radius:50%;border:1.5px solid var(--bdr2);font-size:11px;font-weight:600;color:var(--tx2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-family:var(--m)}
+.q-txt{font-size:14px;line-height:1.5;user-select:none}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px}
+.q-dots{display:flex;flex-wrap:wrap;gap:4px;flex:1;justify-content:center}
+.q-dot{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr2);background:var(--srf);font-size:10px;font-weight:600;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:var(--m)}
+.q-dot:hover{border-color:var(--blue);color:var(--blue)}
+.q-dot.done{background:var(--blue);color:#fff;border-color:var(--blue)}
+.q-dot.cur{border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 3px rgba(0,120,212,.12)}
+/* ── Anti-triche banner ── */
+.at-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#FEF2F2;border:1.5px solid #FECACA;border-radius:var(--r);margin-bottom:14px}
+.at-banner svg{flex-shrink:0;color:#B91C1C}
+.at-txt{font-size:12px;color:#B91C1C;line-height:1.4}
+/* ── Résultat étudiant ── */
+.result-hero{text-align:center;padding:10px 0 20px}
+.score-ring{width:100px;height:100px;border-radius:50%;border:4px solid var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 14px;background:var(--blue-xlt)}
+.score-pct{font-size:28px;font-weight:700;color:var(--blue);font-family:var(--m)}
+.score-frac{font-size:12px;color:var(--tx2)}
+.result-mention{font-size:19px;font-weight:600;margin-bottom:3px}
+.result-who{font-size:13px;color:var(--tx2)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:18px 0}
+.stat-box{background:var(--srf2);border-radius:var(--r);padding:11px 13px;border:1px solid var(--bdr)}
+.stat-lbl{font-size:10px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.stat-val{font-size:17px;font-weight:700;font-family:var(--m)}
+.stat-val.green{color:var(--ok)}.stat-val.red{color:var(--err)}
+.viol-log{margin-top:12px;background:var(--srf2);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.viol-hdr{background:#FEF2F2;border-bottom:1px solid #FECACA;padding:6px 12px;font-size:11px;font-weight:700;text-transform:uppercase;color:#B91C1C}
+.viol-item{padding:5px 12px;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--tx2);font-family:var(--m)}
+.viol-item:last-child{border-bottom:none}
+/* ── Dashboard KPIs ── */
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--ok)}.dot-blue{background:var(--blue)}
+.dot-pulse{animation:dp 1.4s infinite}
+@keyframes dp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+.kpi{background:var(--srf);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh)}
+.kpi-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:3px}
+.kpi-val{font-size:24px;font-weight:700;font-family:var(--m)}
+.kpi-sub{font-size:11px;color:var(--tx3);margin-top:1px}
+.live-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--ok);background:#ECFDF5;border:1px solid #A7F3D0;border-radius:20px;padding:2px 9px}
+/* ── Table ── */
+.table-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:9px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);background:var(--srf2);border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--bdr);color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--blue-xlt)}
+.mini-prog{display:flex;align-items:center;gap:6px}
+.mini-track{flex:1;height:4px;background:var(--bdr);border-radius:4px;overflow:hidden;min-width:50px}
+.mini-fill{height:4px;background:var(--blue);border-radius:4px;transition:width .5s}
+/* ── Détail session ── */
+.detail-panel{background:var(--srf2);border:1px solid var(--bdr);border-radius:var(--rl);padding:18px;margin-top:14px}
+.dp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px}
+.dp-name{font-size:15px;font-weight:600}
+.dp-meta{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.5}
+.di{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:12px}
+.di:last-child{border-bottom:none}
+.di-num{min-width:18px;font-weight:700;color:var(--tx2);font-family:var(--m);flex-shrink:0;margin-top:1px}
+.di-q{flex:1;color:var(--tx);line-height:1.4}
+.di-ok{color:var(--ok)}.di-ko{color:var(--err)}
+.dviol{margin-top:12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r);overflow:hidden}
+.dviol-hdr{padding:6px 12px;font-size:11px;font-weight:700;text-transform:uppercase;color:#B91C1C;border-bottom:1px solid #FECACA}
+.dviol-item{padding:5px 12px;border-bottom:1px solid #FECACA;font-size:12px;color:#7F1D1D;font-family:var(--m);display:flex;gap:14px}
+.dviol-item:last-child{border-bottom:none}
+/* ── Bibliothèque ── */
+.quiz-card{background:var(--srf);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:border .15s}
+.quiz-card.active-quiz{border-color:var(--blue);background:var(--blue-xlt)}
+.quiz-icon{width:38px;height:38px;border-radius:9px;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.quiz-info{flex:1;min-width:0}
+.quiz-title{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quiz-meta{font-size:12px;color:var(--tx2);margin-top:2px}
+.quiz-actions{display:flex;gap:6px;flex-shrink:0}
+/* ── Drop zone ── */
+.drop-zone{border:2px dashed var(--bdr2);border-radius:var(--rl);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--srf2)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--blue);background:var(--blue-xlt)}
+.drop-zone svg{width:30px;height:30px;stroke:var(--tx3);margin-bottom:9px}
+.drop-zone p{font-size:13px;color:var(--tx2)}
+.drop-zone small{font-size:12px;color:var(--tx3)}
+/* ── Q-breakdown ── */
+.qb-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:12px}
+.qb-item:last-child{border-bottom:none}
+.qb-num{width:20px;font-size:11px;font-weight:700;color:var(--tx2);font-family:var(--m);flex-shrink:0}
+.qb-txt{flex:1;line-height:1.3}
+.qb-bar{width:80px;flex-shrink:0}
+.qb-track{height:5px;background:var(--bdr);border-radius:5px;overflow:hidden}
+.qb-fill{height:5px;border-radius:5px;transition:width .6s}
+.qb-pct{width:32px;text-align:right;font-size:11px;font-weight:700;font-family:var(--m);flex-shrink:0}
+/* ── CSV ── */
+.csv-area{background:var(--srf2);border:1px solid var(--bdr);border-radius:var(--r);padding:12px;font-family:var(--m);font-size:11px;color:var(--tx2);white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;line-height:1.6}
+/* ── Config code accès ── */
+.code-display{font-family:var(--m);font-size:22px;font-weight:700;letter-spacing:.2em;color:var(--blue);background:var(--blue-lt);border:1.5px solid var(--blue);border-radius:var(--r);padding:12px 20px;text-align:center;margin:12px 0}
+.slbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:10px}
+@media(max-width:640px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .q-dots{display:none}
+  .main{padding:14px}
+  .frow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="tb-dot"></div>
+  <span class="tb-name">QCM Pro</span>
+  <div class="tb-tabs">
+    <button class="ttab active" id="tab-s" onclick="switchTab('s')">Étudiant</button>
+    <button class="ttab" id="tab-t" onclick="switchTab('t')">Formateur</button>
+  </div>
+</nav>
+
+<!-- ═══════ ÉTUDIANT ═══════ -->
+<div id="view-s">
+
+  <!-- Identification -->
+  <div id="sc-login" class="login-center">
+    <div class="login-box">
+      <div class="login-logo" style="background:var(--blue)">
+        <svg viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+      </div>
+      <h1 class="login-title" id="login-title">Évaluation</h1>
+      <p class="login-sub" id="login-sub">Saisissez votre nom et le code d'accès fourni par votre formateur.</p>
+      <div class="card">
+        <div id="login-err" class="box-err hidden" style="margin-bottom:12px"></div>
+        <div class="field">
+          <label>Prénom et nom complet</label>
+          <input type="text" id="inp-name" placeholder="Marie Dupont" autocomplete="off">
+        </div>
+        <div class="field field-code">
+          <label>Code d'accès</label>
+          <input type="text" id="inp-code" placeholder="••••••" autocomplete="off" maxlength="20">
+        </div>
+        <button class="btn btn-primary btn-full" id="btn-start" onclick="startQCM()" style="margin-top:8px">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Commencer le QCM
+        </button>
+        <div class="box-info" style="margin-top:12px">
+          <strong>Surveillance active :</strong> sorties de fenêtre, clic droit, copier-coller et raccourcis clavier sont détectés et transmis au formateur en temps réel.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QCM actif -->
+  <div id="sc-qcm" class="hidden">
+    <div class="main">
+      <div id="at-zone"></div>
+      <div class="qcm-top">
+        <span class="qcm-lbl" id="qcm-ctr">Question 1 / ?</span>
+        <span class="qcm-tmr" id="qcm-tmr">30:00</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div id="qcm-area"></div>
+    </div>
+  </div>
+
+  <!-- Résultats -->
+  <div id="sc-result" class="hidden">
+    <div class="main">
+      <div class="card">
+        <div class="result-hero">
+          <div class="score-ring">
+            <span class="score-pct" id="r-pct">—</span>
+            <span class="score-frac" id="r-frac">—</span>
+          </div>
+          <div class="result-mention" id="r-mention">—</div>
+          <div class="result-who" id="r-who"></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-lbl">Score</div><div class="stat-val" id="r-score">—</div></div>
+          <div class="stat-box"><div class="stat-lbl">Temps</div><div class="stat-val" id="r-time">—</div></div>
+          <div class="stat-box"><div class="stat-lbl">Alertes</div><div class="stat-val" id="r-viol">—</div></div>
+        </div>
+        <div id="r-viol-log"></div>
+        <p style="font-size:13px;color:var(--tx2);text-align:center;margin-top:14px;padding:10px;background:var(--srf2);border-radius:var(--r)">
+          La correction détaillée est disponible auprès de votre formateur.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /view-s -->
+
+<!-- ═══════ FORMATEUR ═══════ -->
+<div id="view-t" class="hidden">
+
+  <!-- Login formateur -->
+  <div id="tc-login" class="login-center">
+    <div class="login-box">
+      <div class="login-logo" style="background:var(--green)">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h1 class="login-title">Accès formateur</h1>
+      <p class="login-sub">Tableau de bord · Bibliothèque · Paramètres</p>
+      <div class="card">
+        <div id="t-err" class="box-err hidden" style="margin-bottom:12px"></div>
+        <div class="field">
+          <label>Mot de passe</label>
+          <input type="password" id="inp-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')teacherLogin()">
+        </div>
+        <button class="btn btn-navy btn-full" onclick="teacherLogin()">Accéder au tableau de bord</button>
+        <div class="box-info" style="margin-top:12px">Mot de passe par défaut : <strong>FORMATEUR</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="tc-dash" class="hidden">
+    <div class="main">
+
+      <div class="itabs">
+        <button class="itab active" id="itab-live"    onclick="inner('live')">Tableau de bord</button>
+        <button class="itab"        id="itab-library" onclick="inner('library')">Bibliothèque QCM</button>
+        <button class="itab"        id="itab-config"  onclick="inner('config')">Paramètres</button>
+      </div>
+
+      <!-- ── LIVE ── -->
+      <div id="in-live">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:17px;font-weight:600" id="live-title">—</div>
+            <div style="font-size:13px;color:var(--tx2);margin-top:2px">
+              Code actif : <strong id="live-code">—</strong> &nbsp;
+              <span class="live-badge"><span class="dot dot-green dot-pulse"></span>Live · 3s</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" id="btn-toggle" onclick="toggleQCM()">⏸ Désactiver</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button>
+            <button class="btn btn-danger btn-sm" onclick="resetLive()">🗑 Réinitialiser</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-lbl">Connectés</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-sub">inscrits</div></div>
+          <div class="kpi"><div class="kpi-lbl">Terminé</div><div class="kpi-val" id="kpi-done">0</div><div class="kpi-sub">soumissions</div></div>
+          <div class="kpi"><div class="kpi-lbl">Score moyen</div><div class="kpi-val" id="kpi-avg">—</div><div class="kpi-sub">terminés</div></div>
+          <div class="kpi"><div class="kpi-lbl">Alertes</div><div class="kpi-val" id="kpi-viol">0</div><div class="kpi-sub">toutes sessions</div></div>
+        </div>
+
+        <div class="card card-sm" style="margin-bottom:14px">
+          <div class="slbl">Suivi par étudiant</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Étudiant</th><th>Statut</th><th>Avancement</th><th>Score</th><th>Temps</th><th>Alertes</th><th></th></tr></thead>
+              <tbody id="t-body"><tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:2rem;font-style:italic">En attente des étudiants...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="detail-panel" class="detail-panel hidden"></div>
+
+        <div class="card card-sm" style="margin-bottom:14px">
+          <div class="slbl">Taux de réussite par question</div>
+          <div id="q-breakdown"><p style="font-size:13px;color:var(--tx3)">Aucun étudiant n'a terminé.</p></div>
+        </div>
+
+        <div class="card card-sm">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+            <div class="slbl" style="margin:0">Export CSV</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyCSV()">Copier</button>
+          </div>
+          <div class="csv-area" id="csv-area">Aucune donnée.</div>
+        </div>
+      </div><!-- /in-live -->
+
+      <!-- ── BIBLIOTHÈQUE ── -->
+      <div id="in-library" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:16px;font-weight:600">Bibliothèque de QCM</div>
+            <div style="font-size:13px;color:var(--tx2);margin-top:2px">Activez un QCM pour le rendre disponible aux étudiants</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showImport()">+ Importer un QCM</button>
+        </div>
+
+        <div id="lib-list"></div>
+
+        <!-- Panneau import -->
+        <div id="import-panel" class="hidden" style="margin-top:14px">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div style="font-size:15px;font-weight:600">Importer un fichier QCM</div>
+              <button class="btn btn-ghost btn-sm" onclick="hideImport()">✕</button>
+            </div>
+            <div id="imp-err" class="box-err hidden" style="margin-bottom:10px"></div>
+            <div id="imp-ok"  class="box-ok  hidden" style="margin-bottom:10px"></div>
+            <div class="drop-zone" id="drop-zone" onclick="$('file-input').click()">
+              <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+              <p>Glissez-déposez votre fichier ici</p>
+              <small>Formats acceptés : CSV · JSON · XML · max 2 Mo</small>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.json,.xml,.txt" class="hidden" onchange="handleFile(event)">
+
+            <div class="box-info" style="margin-top:12px">
+              <strong>Formats supportés :</strong><br>
+              <strong>CSV</strong> — séparateur <code>;</code> ou <code>,</code> — voir le fichier exemple.<br>
+              <strong>JSON</strong> — <code>{"title":"…","questions":[{"q":"…","choices":["A","B"],"answer":0}]}</code><br>
+              <strong>XML</strong> — <code>&lt;quiz title="…"&gt;&lt;question&gt;&lt;q&gt;…&lt;/q&gt;&lt;choice correct="true"&gt;…&lt;/choice&gt;&lt;/question&gt;&lt;/quiz&gt;</code>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="dlCSV()">⬇ Exemple CSV</button>
+              <button class="btn btn-ghost btn-sm" onclick="dlJSON()">⬇ Exemple JSON</button>
+              <button class="btn btn-ghost btn-sm" onclick="dlXML()">⬇ Exemple XML</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prévisualisation -->
+        <div id="quiz-preview" class="hidden" style="margin-top:14px">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div style="font-size:15px;font-weight:600" id="prev-title">Prévisualisation</div>
+              <button class="btn btn-ghost btn-sm" onclick="$('quiz-preview').classList.add('hidden')">✕</button>
+            </div>
+            <div id="prev-body"></div>
+          </div>
+        </div>
+      </div><!-- /in-library -->
+
+      <!-- ── CONFIG ── -->
+      <div id="in-config" class="hidden">
+
+        <!-- Code d'accès -->
+        <div class="card card-sm" style="margin-bottom:14px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:14px">Code d'accès étudiant</div>
+          <p style="font-size:13px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
+            Ce code est communiqué oralement à vos étudiants au moment de l'évaluation. Changez-le à chaque promotion ou établissement pour éviter toute réutilisation.
+          </p>
+          <div class="code-display" id="cfg-code-display">AZUR2026</div>
+          <div class="field" style="margin-top:12px">
+            <label>Nouveau code (4 à 12 caractères, majuscules uniquement)</label>
+            <input type="text" id="cfg-new-code" placeholder="EX: LPSR2026 ou IFAPME-A" style="text-transform:uppercase;font-family:var(--m);letter-spacing:.12em;font-size:15px" maxlength="12">
+          </div>
+          <div id="code-ok"  class="box-ok  hidden" style="margin-bottom:10px"></div>
+          <div id="code-err" class="box-err hidden" style="margin-bottom:10px"></div>
+          <button class="btn btn-primary" onclick="saveCode()">Mettre à jour le code</button>
+        </div>
+
+        <!-- Durée -->
+        <div class="card card-sm" style="margin-bottom:14px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:14px">Durée du QCM</div>
+          <div class="field" style="max-width:220px">
+            <label>Durée en minutes</label>
+            <input type="number" id="cfg-duration" min="5" max="180" placeholder="30">
+          </div>
+          <div id="dur-ok"  class="box-ok  hidden" style="margin-bottom:10px"></div>
+          <button class="btn btn-primary" onclick="saveDuration()">Enregistrer</button>
+        </div>
+
+        <!-- Mot de passe formateur -->
+        <div class="card card-sm" style="margin-bottom:14px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:14px">Mot de passe formateur</div>
+          <div class="frow">
+            <div class="field"><label>Mot de passe actuel</label><input type="password" id="cfg-pwd-old" placeholder="••••••••"></div>
+            <div class="field"><label>Nouveau mot de passe</label><input type="password" id="cfg-pwd-new" placeholder="4 caractères minimum"></div>
+          </div>
+          <div class="field"><label>Confirmer</label><input type="password" id="cfg-pwd-cfm" placeholder="••••••••"></div>
+          <div id="pwd-ok"  class="box-ok  hidden" style="margin-bottom:10px"></div>
+          <div id="pwd-err" class="box-err hidden" style="margin-bottom:10px"></div>
+          <button class="btn btn-navy" onclick="savePwd()">Changer le mot de passe</button>
+        </div>
+
+        <!-- État QCM -->
+        <div class="card card-sm">
+          <div style="font-size:15px;font-weight:600;margin-bottom:12px">État du QCM</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--srf2);border:1px solid var(--bdr);border-radius:var(--r)">
+            <div>
+              <div style="font-size:14px;font-weight:500">Accès étudiant</div>
+              <div style="font-size:12px;color:var(--tx2);margin-top:1px">Quand désactivé, les étudiants ne peuvent plus démarrer</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="badge" id="cfg-badge">Actif</span>
+              <button class="btn btn-ghost btn-sm" id="cfg-toggle-btn" onclick="toggleFromConfig()">Désactiver</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /in-config -->
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+function now(){return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function fmtDate(s){if(!s)return'—';try{return new Date(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return s;}}
+function showEl(id,msg,cls){const e=$(id);e.textContent=msg;e.className=cls;e.classList.remove('hidden');}
+function hideEl(id){$(id).classList.add('hidden');}
+function showTmp(id,msg,cls,ms=4000){showEl(id,msg,cls);setTimeout(()=>hideEl(id),ms);}
+
+// ── State étudiant ────────────────────────────────────────────────────────────
+let st={sid:null,name:'',questions:[],answers:[],cur:0,violations:[],secsLeft:1800,tmrRef:null,startTime:null,done:false};
+let tPwd='', liveRef=null, qcmActive=true;
+
+// ── Onglets ───────────────────────────────────────────────────────────────────
+function switchTab(t){
+  ['s','t'].forEach(x=>{$('view-'+x).classList.toggle('hidden',x!==t);$('tab-'+x).classList.toggle('active',x===t);});
+  if(t==='t'&&tPwd)refreshLive();
+}
+function inner(t){
+  ['live','library','config'].forEach(x=>{$('in-'+x).classList.toggle('hidden',x!==t);$('itab-'+x).classList.toggle('active',x===t);});
+  if(t==='library')loadLib();
+  if(t==='config')loadCfg();
+}
+
+// ── LOGIN ÉTUDIANT ────────────────────────────────────────────────────────────
+async function startQCM(){
+  const name=$('inp-name').value.trim();
+  const code=$('inp-code').value.trim().toUpperCase();
+  hideEl('login-err');
+  if(!name){showEl('login-err','Veuillez saisir votre prénom et nom.','box-err');return;}
+  if(!code){showEl('login-err','Veuillez saisir le code d\'accès.','box-err');return;}
+  $('btn-start').disabled=true;
+  try{
+    const r=await fetch('/api/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,code})});
+    const d=await r.json();
+    if(!r.ok){showEl('login-err',d.error||'Erreur','box-err');$('btn-start').disabled=false;return;}
+    st.sid=d.sessionId; st.name=name; st.questions=d.questions;
+    st.answers=new Array(d.total).fill(-1); st.secsLeft=d.duration; st.startTime=Date.now();
+    $('sc-login').classList.add('hidden'); $('sc-qcm').classList.remove('hidden');
+    renderQ(0); startTimer(); setupAC();
+  }catch(e){showEl('login-err','Impossible de joindre le serveur.','box-err');$('btn-start').disabled=false;}
+}
+
+async function loadLoginInfo(){
+  try{
+    const r=await fetch('/api/status');
+    const d=await r.json();
+    if(d.quiz){
+      $('login-title').textContent=d.quiz.title;
+      if(d.quiz.subject)$('login-sub').textContent=d.quiz.subject+' · Saisissez votre nom et le code d\'accès.';
+    }
+    if(!d.active){showEl('login-err','Le QCM n\'est pas actif. Contactez votre formateur.','box-err');$('btn-start').disabled=true;}
+  }catch(e){}
+}
+
+// ── QUESTION ──────────────────────────────────────────────────────────────────
+function renderQ(idx){
+  st.cur=idx;
+  const total=st.questions.length, q=st.questions[idx];
+  $('qcm-ctr').textContent=`Question ${idx+1} / ${total}`;
+  const done=st.answers.filter(a=>a>=0).length;
+  $('prog-fill').style.width=Math.round(done/total*100)+'%';
+  const dots=st.questions.map((_,i)=>`<button class="q-dot${st.answers[i]>=0?' done':''}${i===idx?' cur':''}" onclick="goQ(${i})">${i+1}</button>`).join('');
+  $('qcm-area').innerHTML=`<div class="card">
+    ${q.part?`<div class="q-part">${q.part}</div>`:''}
+    <div class="q-text">${idx+1}. ${q.q}</div>
+    <div class="q-opts" id="q-opts">
+      ${q.choices.map((c,ci)=>`<button class="q-opt${st.answers[idx]===ci?' sel':''}" onclick="pickAns(${idx},${ci})">
+        <span class="q-ltr">${String.fromCharCode(65+ci)}</span><span class="q-txt">${c}</span></button>`).join('')}
+    </div></div>
+    <div class="q-nav">
+      <button class="btn btn-ghost" onclick="goQ(${idx-1})" ${idx===0?'disabled':''} style="min-width:95px">← Précédent</button>
+      <div class="q-dots">${dots}</div>
+      ${idx<total-1
+        ?`<button class="btn btn-primary" onclick="goQ(${idx+1})" style="min-width:95px">Suivant →</button>`
+        :`<button class="btn btn-navy"  onclick="confirmSubmit()" style="min-width:110px">✓ Soumettre</button>`}
+    </div>`;
+}
+function goQ(i){if(i>=0&&i<st.questions.length)renderQ(i);}
+function pickAns(q,c){
+  if(st.done)return;
+  st.answers[q]=c;
+  document.querySelectorAll('#q-opts .q-opt').forEach((b,ci)=>b.classList.toggle('sel',ci===c));
+  $('prog-fill').style.width=Math.round(st.answers.filter(a=>a>=0).length/st.questions.length*100)+'%';
+  syncP();
+}
+async function syncP(){
+  if(!st.sid)return;
+  try{await fetch('/api/session/'+st.sid,{method:'PATCH',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({progress:st.answers.filter(a=>a>=0).length,violations:st.violations,answers:[...st.answers]})});}catch(e){}
+}
+function confirmSubmit(){
+  const u=st.answers.filter(a=>a<0).length;
+  if(u>0&&!confirm(`${u} question(s) sans réponse. Soumettre quand même ?`))return;
+  doSubmit();
+}
+async function doSubmit(){
+  if(st.done)return; st.done=true;
+  clearInterval(st.tmrRef);
+  const elapsed=Math.round((Date.now()-st.startTime)/1000);
+  try{
+    const r=await fetch('/api/submit/'+st.sid,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:[...st.answers],timeUsed:elapsed,violations:st.violations})});
+    const d=await r.json();
+    showResult(d.score,d.correct,d.time,d.total);
+  }catch(e){showResult(null,null,null,st.questions.length);}
+}
+function showResult(score,correct,time,total){
+  $('sc-qcm').classList.add('hidden'); $('sc-result').classList.remove('hidden');
+  const mention=score>=80?'Très bien':score>=60?'Assez bien':score>=50?'Passable':'Insuffisant';
+  const cls=score>=60?'green':'red';
+  $('r-pct').textContent=score!==null?score+'%':'—';
+  $('r-frac').textContent=correct!==null?correct+'/'+total:'—';
+  $('r-mention').textContent=score!==null?mention:'Réponses enregistrées';
+  $('r-who').textContent=st.name;
+  $('r-score').textContent=score!==null?score+' %':'—'; $('r-score').className='stat-val '+(score!==null?cls:'');
+  $('r-time').textContent=time||'—';
+  $('r-viol').textContent=st.violations.length; $('r-viol').className='stat-val '+(st.violations.length>0?'red':'green');
+  const vz=$('r-viol-log');
+  vz.innerHTML=st.violations.length>0?`<div class="viol-log"><div class="viol-hdr">${st.violations.length} événement(s) enregistré(s)</div>${st.violations.map(v=>`<div class="viol-item">${v.time} — ${v.type}</div>`).join('')}</div>`:'';
+}
+function startTimer(){
+  const el=$('qcm-tmr');
+  st.tmrRef=setInterval(()=>{
+    st.secsLeft--;
+    const m=Math.floor(st.secsLeft/60),s=st.secsLeft%60;
+    if(el){el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(st.secsLeft<=300)el.classList.add('warn');}
+    if(st.secsLeft<=0){clearInterval(st.tmrRef);alert('Temps écoulé ! Soumission automatique.');doSubmit();}
+  },1000);
+}
+
+// ── ANTI-TRICHE ───────────────────────────────────────────────────────────────
+function recordV(type){
+  if(st.done)return;
+  st.violations.push({type,time:now()});
+  const n=st.violations.length,last=st.violations[n-1];
+  const z=$('at-zone');
+  if(z)z.innerHTML=`<div class="at-banner"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div class="at-txt"><strong>Alerte ${n} — ${last.type}</strong> à ${last.time}${n>1?` · ${n} au total`:''}</div></div>`;
+  syncP();
+}
+function setupAC(){
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&!st.done)recordV('Sortie de fenêtre');});
+  window.addEventListener('blur',()=>{if(!st.done)recordV('Perte de focus');});
+  document.addEventListener('contextmenu',e=>{if(!st.done){e.preventDefault();recordV('Clic droit bloqué');}});
+  document.addEventListener('keydown',e=>{
+    if(st.done)return;
+    const k=e.key.toLowerCase();
+    const combo=(e.ctrlKey||e.metaKey)&&['c','a','p','u','s'].includes(k);
+    const dev=e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(k));
+    if(combo||dev||e.key==='PrintScreen'){
+      e.preventDefault();
+      const lbl={c:'Ctrl+C',a:'Ctrl+A',p:'Ctrl+P',u:'Ctrl+U',s:'Ctrl+S',F12:'F12',i:'Ctrl+Shift+I',j:'Ctrl+Shift+J',PrintScreen:'Capture écran'};
+      recordV('Raccourci bloqué : '+(e.key==='PrintScreen'?lbl.PrintScreen:dev?lbl[e.key]||'DevTools':lbl[k]||k));
+    }
+  });
+  document.addEventListener('copy',e=>{if(!st.done){e.preventDefault();recordV('Tentative de copie');}});
+  document.addEventListener('selectstart',e=>{if(!st.done&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA')e.preventDefault();});
+}
+
+// ── LOGIN FORMATEUR ───────────────────────────────────────────────────────────
+async function teacherLogin(){
+  const pwd=$('inp-pwd').value;
+  hideEl('t-err');
+  try{
+    const r=await fetch('/api/results',{headers:{'x-teacher-pwd':pwd}});
+    if(!r.ok){showEl('t-err','Mot de passe incorrect.','box-err');return;}
+    tPwd=pwd;
+    $('tc-login').classList.add('hidden'); $('tc-dash').classList.remove('hidden');
+    refreshLive(); liveRef=setInterval(refreshLive,3000);
+  }catch(e){showEl('t-err','Impossible de joindre le serveur.','box-err');}
+}
+
+// ── LIVE ──────────────────────────────────────────────────────────────────────
+async function refreshLive(){
+  if(!tPwd)return;
+  try{
+    const r=await fetch('/api/results',{headers:{'x-teacher-pwd':tPwd}});
+    if(!r.ok)return;
+    const d=await r.json();
+    qcmActive=d.active!==false;
+    $('btn-toggle').textContent=qcmActive?'⏸ Désactiver':'▶ Activer';
+    if(d.config)$('live-code').textContent=d.config.accessCode||'—';
+    $('kpi-total').textContent=d.stats.total;
+    $('kpi-done').textContent=d.stats.done;
+    $('kpi-avg').textContent=d.stats.avg!==null?d.stats.avg+'%':'—';
+    $('kpi-viol').textContent=d.stats.violations;
+    const quiz=d.activeQuizId?null:null; // titre depuis sessions
+    const title=d.sessions.length?d.sessions[0].quizTitle:'Aucun QCM actif';
+    $('live-title').textContent=title;
+    renderTable(d.sessions);
+    renderBreakdown(d.sessions,d.activeQuizId);
+    buildCSV(d.sessions);
+  }catch(e){}
+}
+
+function renderTable(sessions){
+  const tbody=$('t-body');
+  if(!sessions.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:2rem;font-style:italic">En attente...</td></tr>';return;}
+  tbody.innerHTML=sessions.map(s=>{
+    const pct=Math.round((s.progress||0)/Math.max(s.questions?.length||20,1)*100);
+    const nv=s.violations?.length||0;
+    const st2=s.status==='terminé'
+      ?`<span class="badge b-green"><span class="dot dot-blue" style="display:inline-block"></span> Terminé</span>`
+      :`<span class="badge b-amber"><span class="dot dot-green dot-pulse" style="display:inline-block"></span> En cours</span>`;
+    const sc=s.score!==null?`<span class="badge ${s.score>=60?'b-green':'b-red'}">${s.score}%</span>`:`<span style="color:var(--tx3)">—</span>`;
+    const vb=nv>0?`<span class="badge b-red">${nv}</span>`:`<span style="color:var(--ok);font-weight:700">✓</span>`;
+    return`<tr><td style="font-weight:600">${s.name}</td><td>${st2}</td>
+      <td><div class="mini-prog"><div class="mini-track"><div class="mini-fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--tx2);font-family:var(--m)">${s.progress||0}</span></div></td>
+      <td>${sc}</td><td style="color:var(--tx2);font-family:var(--m);font-size:12px">${s.time||'—'}</td><td>${vb}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="showDetail('${s.id}')">Voir</button></td></tr>`;
+  }).join('');
+}
+
+async function showDetail(id){
+  try{
+    const r=await fetch('/api/session/'+id+'/detail',{headers:{'x-teacher-pwd':tPwd}});
+    const s=await r.json();
+    renderDetailPanel($('detail-panel'),s);
+  }catch(e){}
+}
+
+function renderDetailPanel(panel,s){
+  panel.classList.remove('hidden');
+  const nv=s.violations?.length||0, vc=nv>0?'var(--err)':'var(--ok)';
+  const vH=nv>0?`<div class="dviol"><div class="dviol-hdr">${nv} événement(s)</div>${s.violations.map(v=>`<div class="dviol-item"><span style="font-weight:600;min-width:160px">${v.type}</span><span style="opacity:.7">${v.time}</span></div>`).join('')}</div>`:'';
+  panel.innerHTML=`<div class="dp-header">
+    <div><div class="dp-name">${s.name}</div>
+    <div class="dp-meta">Score : <strong>${s.score!==null?s.score+'%':'—'}</strong>${s.correct!==undefined?` · ${s.correct}/${s.questions?.length||'?'} bonnes réponses`:''} · Temps : ${s.time||'—'} · Alertes : <strong style="color:${vc}">${nv}</strong></div></div>
+    <button class="btn btn-ghost btn-sm" onclick="this.closest('.detail-panel').classList.add('hidden')">✕</button>
+  </div>${vH}`;
+  if(s.status==='terminé'&&s.answers&&s.questions){
+    panel.innerHTML+=`<div style="margin-top:12px">${s.questions.map((q,i)=>{
+      const ok=s.answers[i]===q.answer;
+      return`<div class="di"><span class="di-num">${i+1}</span>
+        <span class="di-q">${q.part?`<strong>${q.part}</strong> — `:''}${q.q.substring(0,70)}…<br>
+        <span style="color:${ok?'var(--ok)':'var(--err)'};font-size:11px">
+          ${ok?'✓ '+q.choices[q.answer]:'✗ '+(s.answers[i]>=0?q.choices[s.answers[i]]:'—')+' → ✓ '+q.choices[q.answer]}
+        </span></span>
+        <span class="${ok?'di-ok':'di-ko'}">${ok?'✓':'✗'}</span></div>`;
+    }).join('')}</div>`;
+  } else if(s.status!=='terminé'){
+    panel.innerHTML+=`<p style="font-size:13px;color:var(--tx2);margin-top:10px">En cours — ${s.progress||0} réponse(s) saisie(s).</p>`;
+  }
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function renderBreakdown(sessions,activeQuizId){
+  const done=sessions.filter(s=>s.status==='terminé');
+  const el=$('q-breakdown');
+  if(!done.length){el.innerHTML='<p style="font-size:13px;color:var(--tx3)">Aucun étudiant n\'a terminé.</p>';return;}
+  try{
+    if(!activeQuizId)return;
+    const r=await fetch('/api/quizzes/'+activeQuizId,{headers:{'x-teacher-pwd':tPwd}});
+    const quiz=await r.json();
+    const qs=quiz.questions||[];
+    el.innerHTML=qs.map((q,i)=>{
+      const c=done.filter(s=>s.answers&&s.answers[i]===q.answer).length;
+      const p=Math.round(c/done.length*100);
+      const col=p>=70?'var(--ok)':p>=40?'var(--warn)':'var(--err)';
+      return`<div class="qb-item"><span class="qb-num">${i+1}</span>
+        <span class="qb-txt">${q.q.length>75?q.q.substring(0,75)+'…':q.q}</span>
+        <div class="qb-bar"><div class="qb-track"><div class="qb-fill" style="width:${p}%;background:${col}"></div></div></div>
+        <span class="qb-pct" style="color:${col}">${p}%</span></div>`;
+    }).join('');
+  }catch(e){}
+}
+
+function buildCSV(sessions){
+  const area=$('csv-area');
+  if(!sessions.length){area.textContent='Aucune donnée.';return;}
+  const hdr='Nom;QCM;Statut;Score;Bonnes réponses;Temps;Nb alertes;Détail alertes;Début';
+  const rows=sessions.map(s=>{
+    const nv=s.violations?.length||0;
+    const vd=s.violations?.map(v=>`${v.time}:${v.type}`).join('|')||'';
+    return[s.name,s.quizTitle||'',s.status,s.score!==null?s.score+'%':'',s.correct!==undefined?s.correct:'',s.time||'',nv,vd,s.startedAt||''].join(';');
+  });
+  area.textContent=[hdr,...rows].join('\n');
+}
+
+async function toggleQCM(){
+  try{const r=await fetch('/api/config',{method:'PATCH',headers:{'Content-Type':'application/json','x-teacher-pwd':tPwd},body:JSON.stringify({active:!qcmActive})});
+    const d=await r.json(); qcmActive=d.active; $('btn-toggle').textContent=qcmActive?'⏸ Désactiver':'▶ Activer';}catch(e){}
+}
+async function resetLive(){
+  if(!confirm('Supprimer toutes les sessions en cours ? (Action irréversible)'))return;
+  try{await fetch('/api/results',{method:'DELETE',headers:{'x-teacher-pwd':tPwd}});refreshLive();}catch(e){}
+}
+function exportCSV(){
+  const txt=$('csv-area').textContent;
+  if(txt==='Aucune donnée.')return;
+  const blob=new Blob(['\uFEFF'+txt],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='qcm-session.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function copyCSV(){navigator.clipboard?.writeText($('csv-area').textContent).then(()=>alert('Copié !')).catch(()=>alert('Sélectionnez manuellement.'));}
+
+// ── BIBLIOTHÈQUE ──────────────────────────────────────────────────────────────
+async function loadLib(){
+  try{
+    const r=await fetch('/api/quizzes',{headers:{'x-teacher-pwd':tPwd}});
+    const d=await r.json();
+    const el=$('lib-list');
+    if(!d.quizzes.length){el.innerHTML='<p style="font-size:13px;color:var(--tx3);text-align:center;padding:2rem">Aucun QCM. Importez un fichier.</p>';return;}
+    el.innerHTML=d.quizzes.map(q=>`<div class="quiz-card${q.active?' active-quiz':''}">
+      <div class="quiz-icon">${q.active?'▶':'📄'}</div>
+      <div class="quiz-info">
+        <div class="quiz-title">${q.title}</div>
+        <div class="quiz-meta">${q.subject||'—'} · ${q.questionCount} question(s) · Créé le ${fmtDate(q.createdAt)}</div>
+        ${q.active?'<span class="badge b-green" style="margin-top:4px">QCM actif</span>':''}
+      </div>
+      <div class="quiz-actions">
+        <button class="btn btn-ghost btn-sm" onclick="previewQuiz(${q.id})">Aperçu</button>
+        ${!q.active?`<button class="btn btn-primary btn-sm" onclick="activateQuiz(${q.id})">Activer</button>`:''}
+        ${!q.active?`<button class="btn btn-danger btn-sm" onclick="deleteQuiz(${q.id},'${q.title.replace(/'/g,"\\'")}')">🗑</button>`:''}
+      </div></div>`).join('');
+  }catch(e){}
+}
+
+async function activateQuiz(id){
+  if(!confirm('Activer ce QCM ? Les sessions en cours seront réinitialisées.'))return;
+  try{await fetch('/api/quizzes/'+id+'/activate',{method:'PATCH',headers:{'x-teacher-pwd':tPwd}});loadLib();}catch(e){}
+}
+async function deleteQuiz(id,title){
+  if(!confirm(`Supprimer "${title}" ?`))return;
+  try{const r=await fetch('/api/quizzes/'+id,{method:'DELETE',headers:{'x-teacher-pwd':tPwd}});
+    const d=await r.json();if(!r.ok){alert(d.error);return;}loadLib();}catch(e){}
+}
+async function previewQuiz(id){
+  try{
+    const r=await fetch('/api/quizzes/'+id,{headers:{'x-teacher-pwd':tPwd}});
+    const q=await r.json();
+    $('prev-title').textContent=`${q.title} — ${q.questions.length} questions`;
+    $('prev-body').innerHTML=q.questions.map((qq,i)=>`<div style="padding:9px 0;border-bottom:1px solid var(--bdr)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:5px">${i+1}. ${qq.q}</div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        ${qq.choices.map((c,ci)=>`<div style="font-size:12px;padding:4px 8px;border-radius:6px;background:${ci===qq.answer?'#ECFDF5':'var(--srf2)'};color:${ci===qq.answer?'#065F46':'var(--tx2)'};border:1px solid ${ci===qq.answer?'#A7F3D0':'var(--bdr)'}">
+          ${String.fromCharCode(65+ci)}. ${c}${ci===qq.answer?' <strong>(✓)</strong>':''}</div>`).join('')}
+      </div></div>`).join('');
+    $('quiz-preview').classList.remove('hidden');
+    $('quiz-preview').scrollIntoView({behavior:'smooth'});
+  }catch(e){}
+}
+
+function showImport(){$('import-panel').classList.remove('hidden');$('import-panel').scrollIntoView({behavior:'smooth'});}
+function hideImport(){$('import-panel').classList.add('hidden');hideEl('imp-err');hideEl('imp-ok');}
+
+function handleFile(e){const f=e.target.files[0];if(f)uploadFile(f);}
+function uploadFile(file){
+  const dz=$('drop-zone');dz.style.borderColor='var(--blue)';
+  const fd=new FormData();fd.append('file',file);
+  fetch('/api/quizzes/import',{method:'POST',headers:{'x-teacher-pwd':tPwd},body:fd})
+    .then(r=>r.json())
+    .then(d=>{dz.style.borderColor='';
+      if(d.ok){showTmp('imp-ok',`✓ "${d.title}" importé — ${d.count} questions.`,'box-ok');hideEl('imp-err');loadLib();$('file-input').value='';}
+      else{showEl('imp-err',d.error||'Erreur','box-err');}
+    }).catch(e=>{dz.style.borderColor='';showEl('imp-err','Erreur réseau.','box-err');});
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadLoginInfo();
+  const dz=$('drop-zone');if(!dz)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f)uploadFile(f);else alert('Fichier non reconnu.');
+  });
+});
+
+// ── Télécharger fichiers exemples ─────────────────────────────────────────────
+function dlCSV(){
+  const c=`title;Mon QCM de Réseaux\nsubject;Licence Pro Réseaux\nduration;1800\n---\npart;question;choixA;choixB;choixC;choixD;answer\nProtocoles;Quel protocole opère en couche 4 du modèle OSI ?;HTTP;TCP;ARP;BGP;1\nAdressage;Un masque /24 correspond à quelle notation décimale ?;255.0.0.0;255.255.0.0;255.255.255.0;255.255.255.128;2\nSécurité;Quel protocole est utilisé pour chiffrer les communications web ?;FTP;HTTP;HTTPS;Telnet;2\n`;
+  dl('exemple-qcm.csv',c,'text/csv');
+}
+function dlJSON(){
+  const j=JSON.stringify({title:"Mon QCM de Réseaux",subject:"Licence Pro Réseaux",duration:1800,questions:[
+    {part:"Protocoles",q:"Quel protocole opère en couche 4 du modèle OSI ?",choices:["HTTP","TCP","ARP","BGP"],answer:1},
+    {part:"Adressage",q:"Un masque /24 en notation décimale ?",choices:["255.0.0.0","255.255.0.0","255.255.255.0","255.255.255.128"],answer:2},
+    {part:"Sécurité",q:"Protocole pour chiffrer les communications web ?",choices:["FTP","HTTP","HTTPS","Telnet"],answer:2}
+  ]},null,2);
+  dl('exemple-qcm.json',j,'application/json');
+}
+function dlXML(){
+  const x=`<?xml version="1.0" encoding="UTF-8"?>\n<quiz title="Mon QCM de Réseaux" subject="Licence Pro Réseaux" duration="1800">\n  <question part="Protocoles">\n    <q>Quel protocole opère en couche 4 du modèle OSI ?</q>\n    <choice>HTTP</choice>\n    <choice correct="true">TCP</choice>\n    <choice>ARP</choice>\n    <choice>BGP</choice>\n  </question>\n  <question part="Adressage">\n    <q>Un masque /24 en notation décimale ?</q>\n    <choice>255.0.0.0</choice>\n    <choice>255.255.0.0</choice>\n    <choice correct="true">255.255.255.0</choice>\n    <choice>255.255.255.128</choice>\n  </question>\n</quiz>`;
+  dl('exemple-qcm.xml',x,'application/xml');
+}
+function dl(name,content,type){
+  const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+async function loadCfg(){
+  try{
+    const r=await fetch('/api/config',{headers:{'x-teacher-pwd':tPwd}});
+    const d=await r.json();
+    $('cfg-code-display').textContent=d.accessCode||'—';
+    $('cfg-new-code').value='';
+    $('cfg-duration').value=Math.round((d.duration||1800)/60);
+    const active=d.qcmActive!==false;
+    $('cfg-badge').textContent=active?'Actif':'Désactivé';
+    $('cfg-badge').className='badge '+(active?'b-green':'b-red');
+    $('cfg-toggle-btn').textContent=active?'Désactiver':'Activer';
+    qcmActive=active;
+  }catch(e){}
+}
+
+async function saveCode(){
+  const code=$('cfg-new-code').value.trim().toUpperCase().replace(/\s+/g,'');
+  hideEl('code-err');hideEl('code-ok');
+  if(code.length<4){showEl('code-err','Le code doit faire au moins 4 caractères.','box-err');return;}
+  if(!/^[A-Z0-9\-_]+$/.test(code)){showEl('code-err','Uniquement lettres A-Z, chiffres, tirets et underscores.','box-err');return;}
+  try{
+    await fetch('/api/config',{method:'PATCH',headers:{'Content-Type':'application/json','x-teacher-pwd':tPwd},body:JSON.stringify({accessCode:code})});
+    $('cfg-code-display').textContent=code;
+    $('cfg-new-code').value='';
+    showTmp('code-ok',`✓ Code mis à jour : ${code}`,'box-ok');
+  }catch(e){showEl('code-err','Erreur réseau.','box-err');}
+}
+
+async function saveDuration(){
+  const min=parseInt($('cfg-duration').value);
+  hideEl('dur-ok');
+  if(!min||min<1||min>180){alert('Durée : entre 1 et 180 minutes.');return;}
+  try{
+    await fetch('/api/config',{method:'PATCH',headers:{'Content-Type':'application/json','x-teacher-pwd':tPwd},body:JSON.stringify({duration:min*60})});
+    showTmp('dur-ok',`✓ Durée mise à jour : ${min} min`,'box-ok');
+  }catch(e){}
+}
+
+async function savePwd(){
+  const old=$('cfg-pwd-old').value, nw=$('cfg-pwd-new').value, cf=$('cfg-pwd-cfm').value;
+  hideEl('pwd-err');hideEl('pwd-ok');
+  if(old!==tPwd){showEl('pwd-err','Mot de passe actuel incorrect.','box-err');return;}
+  if(nw.length<4){showEl('pwd-err','Nouveau mot de passe : 4 caractères minimum.','box-err');return;}
+  if(nw!==cf){showEl('pwd-err','Les deux mots de passe ne correspondent pas.','box-err');return;}
+  try{
+    await fetch('/api/config',{method:'PATCH',headers:{'Content-Type':'application/json','x-teacher-pwd':tPwd},body:JSON.stringify({teacherPwd:nw})});
+    tPwd=nw;
+    ['cfg-pwd-old','cfg-pwd-new','cfg-pwd-cfm'].forEach(id=>$(id).value='');
+    showTmp('pwd-ok','✓ Mot de passe changé.','box-ok');
+  }catch(e){showEl('pwd-err','Erreur réseau.','box-err');}
+}
+
+async function toggleFromConfig(){
+  try{
+    const r=await fetch('/api/config',{method:'PATCH',headers:{'Content-Type':'application/json','x-teacher-pwd':tPwd},body:JSON.stringify({active:!qcmActive})});
+    const d=await r.json(); qcmActive=d.active; loadCfg();
+  }catch(e){}
+}
+</script>
+</body>
+</html>
